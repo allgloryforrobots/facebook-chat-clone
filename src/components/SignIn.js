@@ -26,6 +26,10 @@ function SignIn() {
     return (
         <Button
             onClick={() => githubSignin()}
+            style={{
+                minWidth: 100,
+                margin: '0 auto'
+            }}
             color="primary"
             variant="outlined">
             Авторизация

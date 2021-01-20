@@ -6,20 +6,21 @@ import {useAuthState} from 'react-firebase-hooks/auth'
 import {useCollectionData} from "react-firebase-hooks/firestore"
 import './Landing.css'
 import regeneratorRuntime from "regenerator-runtime"
+import moment from "moment"
 
-import TextField from "@material-ui/core/TextField";
-import SignOut from "./SignOut";
-import SignIn from "./SignIn";
-import ChatMessage from "./ChatMessage";
+import TextField from "@material-ui/core/TextField"
+import SignOut from "./SignOut"
+import SignIn from "./SignIn"
+import ChatMessage from "./ChatMessage"
 
 const firebaseConfig = {
-	apiKey: "AIzaSyAqEEtoXfwWBXUoyXe2yULS5ANujlZNz_E",
-	authDomain: "facebook-chat-clone-react.firebaseapp.com",
-	projectId: "facebook-chat-clone-react",
-	storageBucket: "facebook-chat-clone-react.appspot.com",
-	messagingSenderId: "402640362652",
-	appId: "1:402640362652:web:efdf0f4c9d788c527ae159",
-	measurementId: "G-K4L8RJ4EEJ"
+	apiKey: process.env.apiKey,
+	authDomain: process.env.authDomain,
+	projectId: process.env.projectId,
+	storageBucket: process.env.storageBucket,
+	messagingSenderId: process.env.messagingSenderId,
+	appId: process.env.appId,
+	measurementId: process.env.measurementId,
 }
 
 
@@ -39,11 +40,13 @@ const firestore = firebase.firestore()
 function Landing() {
 	const [user] = useAuthState(auth)
 
+
 	return (
 		<div className="App">
 
 			<header>
 				{user ? <SignOut/> : null}
+				<h3 style={{position: 'absolute', color: 'black', left: 250}}>Facebook Messenger Clone</h3>
 			</header>
 
 			<section>
@@ -69,12 +72,13 @@ function ChatRoom() {
 
 	const sendMessage = async(e) => {
 		e.preventDefault()
-		const { uid, photoURL } = auth.currentUser
+		const { uid, photoURL } = firebase.auth().currentUser
 		await messagesRef.add({
 			text: formValue,
 			createdAt: firebase.firestore.FieldValue.serverTimestamp(),
 			uid,
-			photoUrl: photoURL || 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
+			photoUrl: photoURL || 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+			momentDate: moment().format('h:mm')
 		})
 
 		setFormValue('')
@@ -83,9 +87,18 @@ function ChatRoom() {
 
 
 	return (
-		<div>
+		<div style={{margin: 0, padding: 0}}>
 			<main>
-				{messages && messages.map(msg => <ChatMessage key={msg.id} message={msg}/>)}
+				{messages && messages.map((msg, index) => {
+					return (
+						<div key={msg.id}>
+							{
+								index % 9 === 0  ? <span>{msg.momentDate}</span> : null
+							}
+								<ChatMessage  message={msg}/>
+						</div>
+						)
+				})}
 
 				<div ref={dummy}/>
 			</main>
@@ -95,6 +108,10 @@ function ChatRoom() {
 					<TextField
 						id="standard-basic"
 						value={formValue}
+						style={{
+							margin: '0 auto',
+							width: 700
+						}}
 						onChange={e => setFormValue(e.target.value)}
 						label="Отправить сообщение" />
 
