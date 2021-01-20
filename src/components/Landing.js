@@ -93,7 +93,7 @@ function ChatRoom() {
 					return (
 						<div key={msg.id}>
 							{
-								index % 9 === 0  ? <span>{msg.momentDate}</span> : null
+								index % 10 === 0  ? <span>{msg.momentDate}</span> : null
 							}
 								<ChatMessage  message={msg}/>
 						</div>
